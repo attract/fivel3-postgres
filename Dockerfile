@@ -14,3 +14,4 @@ RUN make && make install
 
 # Add extensions
 ADD ./create_hstore.sql /docker-entrypoint-initdb.d
+ADD ./triggers.sql /docker-entrypoint-initdb.d
