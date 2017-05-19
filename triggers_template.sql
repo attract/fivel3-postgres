@@ -65,7 +65,110 @@ $$ LANGUAGE plpgsql;
 /********* {{ supplier_products.model }} *********/
 DROP TRIGGER IF EXISTS trigger_{{ supplier_products.model|lower }} ON {{ supplier_products.app }}_{{ supplier_products.model|lower }};
 
-CREATE TRIGGER trigger_{{ supplier_products.model }}
+CREATE TRIGGER trigger_{{ supplier_products.model|lower }}
 AFTER INSERT OR UPDATE OR DELETE ON {{ supplier_products.app }}_{{ supplier_products.model|lower }} FOR EACH ROW EXECUTE PROCEDURE sphinx_products ("{{ supplier_products.app }}_index");
 
 {% endfor %}
+
+/********* Catalog index *********/
+
+CREATE OR REPLACE FUNCTION sphinx_catalog() RETURNS TRIGGER AS $$
+DECLARE
+    index_name varchar(254);
+    is_hidden varchar(1);
+    result text;
+BEGIN
+    index_name := 'catalog_index';
+    RAISE NOTICE 'Calling sphinx_catalog(%)', index_name;
+
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+        /* Converted boolean to string (1/0) */
+        is_hidden := (SELECT case when NEW.is_hidden=true then 1 else 0 end)::text;
+
+        result := (SELECT sphinx_replace(index_name, NEW.id,
+                          ARRAY[
+                          'name', NEW.name,
+                          'mptt_level', NEW.mptt_level::text,
+                          'total_products', NEW.total_products::text,
+                          'is_hidden', is_hidden
+                          ]));
+
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        result := sphinx_delete(index_name, OLD.id);
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_catalog ON product_catalog;
+
+CREATE TRIGGER trigger_catalog
+AFTER INSERT OR UPDATE OR DELETE ON product_catalog FOR EACH ROW EXECUTE PROCEDURE sphinx_catalog ();
+
+/********* Manufacturer index *********/
+
+CREATE OR REPLACE FUNCTION sphinx_manufacturer() RETURNS TRIGGER AS $$
+DECLARE
+    index_name varchar(254);
+    result text;
+BEGIN
+    index_name := 'manufacturer_index';
+    RAISE NOTICE 'Calling sphinx_manufacturer(%)', index_name;
+
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+
+        result := (SELECT sphinx_replace(index_name, NEW.id,
+                          ARRAY[
+                          'name_manufacturer', NEW.name_manufacturer
+                          ]));
+
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        result := sphinx_delete(index_name, OLD.id);
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_manufacturer ON manufacturer_manufacturer;
+
+CREATE TRIGGER trigger_manufacturer
+AFTER INSERT OR UPDATE OR DELETE ON manufacturer_manufacturer FOR EACH ROW EXECUTE PROCEDURE sphinx_manufacturer ();
+
+/********* Product Card index *********/
+
+CREATE OR REPLACE FUNCTION sphinx_product_card() RETURNS TRIGGER AS $$
+DECLARE
+    index_name varchar(254);
+    result text;
+BEGIN
+    index_name := 'product_card_index';
+    RAISE NOTICE 'Calling sphinx_product_card(%)', index_name;
+
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+
+        result := (SELECT sphinx_replace(index_name, NEW.id,
+                          ARRAY[
+                          'name', NEW.name,
+                          'man', to_json(NEW.manufacturer)::text,
+                          'description', NEW.description,
+                          'description_big', NEW.description_big,
+                          'attributes', to_json(NEW.attributes)::text,
+                          'catalog_id', NEW.catalog_id::text,
+                          'slug', NEW.slug,
+                          'slug_catalog', NEW.slug_catalog
+                          ]));
+
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        result := sphinx_delete(index_name, OLD.id);
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_productcard ON product_card_productcard;
+
+CREATE TRIGGER trigger_productcard
+AFTER INSERT OR UPDATE OR DELETE ON product_card_productcard FOR EACH ROW EXECUTE PROCEDURE sphinx_product_card ();
