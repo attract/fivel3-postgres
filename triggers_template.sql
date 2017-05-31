@@ -29,6 +29,7 @@ BEGIN
                           'image', NEW.image,
                           'data_sheet', to_json(NEW.data_sheet)::text,
                           'attributes', to_json(NEW.attributes)::text,
+                          'manufacturer', NEW.manufacturer,
                           'price_1', NEW.price_1::text,
                           'price_2', NEW.price_2::text,
                           'price_3', NEW.price_3::text,
