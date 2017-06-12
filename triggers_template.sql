@@ -47,6 +47,7 @@ BEGIN
                           'stock_7', NEW.stock_7::text,
                           'stock_8', NEW.stock_8::text,
                           'supplier_id', NEW.supplier_id::text,
+                          'product_card_id', NEW.product_card_id::text,
                           'catalog_id', NEW.catalog_id::text,
                           'quantity', NEW.quantity::text,
                           'quantity_in_box', NEW.quantity_in_box::text,
