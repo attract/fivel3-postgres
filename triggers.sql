@@ -23,7 +23,7 @@ BEGIN
                           'article', NEW.article,
                           'description', NEW.description,
                           'is_visible', is_visible,
-                          'is_user_can_buy', NEW.is_user_can_buy::text,
+                          'is_user_can_buy', is_user_can_buy,
                           'import_rate_to_rub', NEW.import_rate_to_rub::text,
                           'min_order', NEW.min_order::text,
                           'image', NEW.image,
