@@ -127,13 +127,6 @@ CREATE TRIGGER trigger_productplatan
 AFTER INSERT OR UPDATE OR DELETE ON platan_productplatan FOR EACH ROW EXECUTE PROCEDURE sphinx_products ("platan_index");
 
 
-/********* ProductMouser *********/
-DROP TRIGGER IF EXISTS trigger_productmouser ON mouser_productmouser;
-
-CREATE TRIGGER trigger_productmouser
-AFTER INSERT OR UPDATE OR DELETE ON mouser_productmouser FOR EACH ROW EXECUTE PROCEDURE sphinx_products ("mouser_index");
-
-
 /********* ProductDigikey *********/
 DROP TRIGGER IF EXISTS trigger_productdigikey ON digikey_productdigikey;
 
