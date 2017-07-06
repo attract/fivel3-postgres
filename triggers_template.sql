@@ -20,6 +20,7 @@ BEGIN
                           ARRAY[
                           'pk', NEW.id::text,
                           'name', NEW.name,
+                          'slug', NEW.slug,
                           'article', NEW.article,
                           'description', NEW.description,
                           'is_visible', is_visible,
