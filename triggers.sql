@@ -228,7 +228,7 @@ BEGIN
                           'manufacturer_text_list', to_json(NEW.manufacturer_text_list)::text,
                           'description', NEW.description,
                           'description_big', NEW.description_big,
-                          'attributes', to_json(NEW.attributes)::text,
+                          'attributes', NEW.attributes::text,
                           'catalog_id', NEW.catalog_id::text,
                           'slug', NEW.slug,
                           'slug_catalog', NEW.slug_catalog
