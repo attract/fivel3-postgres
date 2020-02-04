@@ -1,3 +1,4 @@
+# on prod server postgres:9.5.10, this code installing postgres:9.5.20 - it may be difference for working with HstoreField
 FROM postgres:9.5
 MAINTAINER AttractGroup
 
