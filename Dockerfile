@@ -8,7 +8,8 @@ RUN apt update
 ADD ./pg-sphinx /pg-sphinx
 RUN apt install -y build-essential
 RUN apt install -y postgresql-server-dev-9.5
-RUN apt install -y libmysqlclient-dev
+RUN apt install -y default-libmysqlclient-dev
+# default-libmysqlclient-dev
 
 WORKDIR /pg-sphinx
 RUN make && make install
@@ -19,7 +20,8 @@ RUN apt install -y python-psycopg2
 
 # install pip
 RUN apt install -y python-pip
-RUN apt install -y build-essential python-dev libmysqlclient-dev
+RUN apt install -y build-essential python-dev default-libmysqlclient-dev
+# default-libmysqlclient-dev
 RUN pip install MySQL-python==1.2.5
 
 # Add extensions
